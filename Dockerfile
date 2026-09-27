@@ -7,7 +7,7 @@ COPY src ./src
 RUN mvn -B -q package -DskipTests
 
 # ---- run ----
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:24-jre
 WORKDIR /app
 RUN useradd --system --uid 1001 app
 COPY --from=build /app/target/eu-ai-act-assistant-*.jar app.jar
