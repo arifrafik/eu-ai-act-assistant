@@ -1,0 +1,18 @@
+# Local Postgres with pgvector. Started automatically by `mvn spring-boot:run`
+# (spring-boot-docker-compose), or manually with `docker compose up -d`.
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    labels:
+      # Tells Spring Boot this is a Postgres service (image name isn't 'postgres')
+      org.springframework.boot.service-connection: postgres
+    environment:
+      POSTGRES_DB: aiact
+      POSTGRES_USER: aiact
+      POSTGRES_PASSWORD: aiact
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

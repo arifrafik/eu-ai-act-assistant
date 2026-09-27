@@ -1,0 +1,33 @@
+name: EUR-Lex markup check
+
+# Downloads the real AI Act text weekly and checks the parser still finds
+# 113 articles, 180 recitals and 13 annexes. Catches EUR-Lex markup changes early.
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Download the AI Act (English)
+        run: |
+          mkdir -p data
+          curl -fsSL -A "eu-ai-act-assistant-ci" -o data/ai-act-en.html \
+            "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401689"
+          ls -lh data/ai-act-en.html
+
+      - name: Parse the real file
+        run: mvn -B test -Dtest=RegulationParserTest

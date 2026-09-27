@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: eu-ai-act-assistant
+  # Local dev: Spring Boot starts compose.yaml and wires the datasource automatically.
+  # In other environments set SPRING_DATASOURCE_URL / USERNAME / PASSWORD.
+  flyway:
+    enabled: true
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      embedding:
+        options:
+          model: text-embedding-3-small
+    vectorstore:
+      pgvector:
+        # Flyway owns the schema (see V1__init.sql), so the store does not create it.
+        initialize-schema: false
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        # Must match the embedding model AND the vector(...) column in V1__init.sql.
+        dimensions: 1536
+        max-document-batch-size: 100
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+ingestion:
+  regulation: AI_ACT
+  lang: en
+  # Official text on EUR-Lex. Anchors like #art_6 are appended for citations.
+  source-url: https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401689
+  # Optional: read a saved copy instead of downloading (recommended while developing).
+  local-file: ${INGESTION_LOCAL_FILE:}
+  max-chunk-tokens: 800
+  embed-batch-size: 100
+  # Ingestion fails if these counts are not found (protects against silent parser breakage).
+  expected:
+    articles: 113
+    recitals: 180
+    annexes: 13

@@ -1,0 +1,9 @@
+target/
+.idea/
+*.iml
+.vscode/
+.DS_Store
+.env
+*.log
+# Downloaded regulation texts (large; test fixtures live in src/test/resources)
+data/
